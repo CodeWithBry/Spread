@@ -1,0 +1,13 @@
+.home {
+    background-color: var(--text-lighter);
+}
+
+.home .button {
+    width: fit-content;
+    height: fit-content;
+    margin: var(--margin-large) auto;
+    padding: var(--pad-y-m) var(--pad-x-l);
+    color: white;
+    background-color: var(--primary);
+    display: block;
+}

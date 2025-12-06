@@ -1,0 +1,18 @@
+.breadCrumb {
+    display: flex;
+    gap: .5rem;
+    padding: 1rem;
+    font-family: var(--font-title);
+    background-color: var(--text-lighter);
+    font-weight: 600;
+}
+
+.breadCrumb>span {
+    display: flex;
+    text-transform: capitalize;
+    gap: .5rem;
+}
+
+.breadCrumb .link {
+    color: var(--link);
+}

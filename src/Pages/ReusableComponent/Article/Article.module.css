@@ -1,0 +1,94 @@
+.article {
+    display: flex;
+    flex-direction: column;
+    border-radius: 1.5rem;
+    width: 300px;
+    height: fit-content;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: .5s ease;
+}
+
+.article:hover {
+    box-shadow: var(--box-shadow-brighter);
+    scale: 1.008;
+}
+
+.article .top {
+    min-width: 100%;
+    height: 175px;
+    overflow: hidden;
+}
+
+.article .top .image {
+    min-width: 100%;
+    height: 100%;
+    background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+}
+
+.article .bottom {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 200px;
+    width: 90%;
+        margin: auto;
+    padding: var(--pad-y-m) var(--pad-x-l);
+    font-family: var(--font);
+    gap: var(--gap-small);
+}
+
+.article .bottom>h3 {
+    color: var(--primary);
+    font-size: clamp(.8rem, 2.5vw, 1.25rem);
+}
+
+.article .bottom>p {
+    height: 100px;
+    overflow-y: hidden;
+    color: var(--text-unhighlight);
+    font-size: var(--p-smaller);
+}
+
+.article .bottom .subDetails {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    font-size: var(--p-smaller);
+}
+
+.article .bottom .subDetails span {
+    background-color: var(--text-lighter);
+    color: var(--text-unhighlight);
+    padding: var(--pad-y-s) var(--pad-x-m);
+    border-radius: .5rem;
+}
+
+.article .bottom .subDetails .link {
+    margin-right: .5rem;
+    color: var(--link);
+}
+
+.article .bottom .subDetails .link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .article .top {
+        min-width: 100%;
+        height: 145px;
+        overflow: hidden;
+    }
+
+    .article .bottom {
+        height: fit-content;
+    }
+
+    .article .bottom>p {
+        height: 50px;
+    }
+}

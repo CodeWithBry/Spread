@@ -1,0 +1,16 @@
+.button {
+    font-family: var(--font);
+    border: none;
+    outline: none;
+}
+
+.button:hover {
+    opacity: .8;
+    scale: 1.05;
+}
+
+.button:active {
+    opacity: .8;
+    scale: .9;
+    transition: .1s ease;
+}

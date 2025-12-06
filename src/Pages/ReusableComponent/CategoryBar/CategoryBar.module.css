@@ -1,0 +1,42 @@
+.categoryBar {
+    display: flex;
+    align-items: center;
+    padding: var(--pad-y-m) 0;
+    gap: var(--gap-normal);
+    border: 2px solid var(--text-lighter);
+    border-left: none;
+    border-right: none;
+    background-color: white;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.categoryBar h3 {
+    margin-left: var(--margin-normal);
+    font-family: var(--font);
+    color: var(--accent);
+}
+
+.categoryBar .category {
+    width: fit-content;
+    height: fit-content;
+    color: var(--text-unhighlight);
+    padding: var(--pad-y-m) calc(var(--pad-x-m) * 2);
+    background-color: var(--accent);
+    color: white;
+    text-wrap: nowrap
+}
+
+.categoryBar .notSelected {
+    background-color: var(--text-lighter);
+    color: var(--text-unhighlight);
+}
+
+.categoryBar .notSelected:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.categoryBar .notSelected:active {
+    opacity: .7;
+}

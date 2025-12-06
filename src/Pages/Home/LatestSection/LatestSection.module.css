@@ -1,0 +1,78 @@
+.latest {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: fit-content;
+    background-color: white;
+    margin-top: -.5rem;
+    font-family: var(--font);
+    color: black;
+    border-radius: 2rem 2rem 0 0;
+}
+
+
+.latest .top {
+    margin: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--accent);
+}
+
+.latest .top>i {
+    font-size: 3rem;
+}
+
+.latest .top .title .button {
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: var(--gap-normal);
+    color: var(--link);
+}
+
+.latest .top .title .button:hover {
+    text-decoration: underline;
+}
+
+.latest .top .title>h1 {
+    font-size: clamp(1.35rem, 5vw, 2rem);
+    color: var(--l-text-color1);
+}
+
+.latest .wrapper {
+    width: 90vw;
+    height: fit-content;
+    gap: var(--gap-normal);
+    margin: 0 auto;
+    padding: calc(var(--pad-y-l) * 3) 0;
+    overflow: hidden;
+    overflow-x: scroll;
+    display: flex;
+    scroll-snap-type: x mandatory;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.latest .wrapper::before {
+    content: attr(data-duplicate);
+}
+
+.latest .wrapper > div:last-child {
+    margin-left: 2rem;
+}
+
+
+
+@media (max-width: 1000px) {
+    .latest {
+        height: fit-content;
+    }
+
+    .latest .wrapper {
+        height: fit-content;
+        gap: var(--gap-large);
+    }
+}

@@ -1,0 +1,121 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100vw;
+    height: 4rem;
+    padding: var(--pad-y-s) 0;
+    position: sticky;
+    top: 0%;
+    box-shadow: 0 0 10px -5px black;
+    z-index: 2;
+    background-color: rgb(255, 255, 255);
+    flex-shrink: 0;
+}
+
+.nav .left {
+    display: flex;
+    align-items: center;
+    margin-left: calc(var(--margin-large) * 2);
+    gap: var(--gap-large);
+}
+
+.nav .left h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-small);
+    font-family: var(--font-title);
+    font-size: clamp(1rem, 2.5vw, 1.85rem);
+}
+
+.nav .left h1>img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.nav .left .links {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-normal);
+}
+
+.nav .left .links .link {
+    color: var(--text-unhighlight);
+    position: relative;
+    font-size: clamp(.5rem, 2.5vw, .8rem);
+}
+
+.nav .left .links .link:hover {
+    color: var(--primary);
+}
+
+.nav .left .links .link::before {
+    content: "";
+    position: absolute;
+    background-color: black;
+    top: 100%;
+    left: 0;
+    width: 0;
+    height: 2.5px;
+}
+
+.nav .left .links .link:hover::before {
+    animation: highlight .5s ease-out forwards;
+}
+
+@keyframes highlight {
+    to {
+        width: 100%;
+    }
+}
+
+.nav .left .links .highlight {
+    color: var(--primary);
+}
+
+.nav .left .links .highlight::before {
+    content: "";
+    position: absolute;
+    background-color: black;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 2.5px;
+    transition: all .5s ease;
+}
+
+.nav .hamburgerButton {
+    display: grid;
+    place-items: center;
+    background-color: transparent;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: black;
+    font-size: clamp(.8rem, 2.5vw, 1rem);
+    margin-right: calc(var(--margin-large) * 2);
+}
+
+.nav .hamburgerButton:hover {
+    background-color: rgb(214, 214, 214);
+    color: black;
+}
+
+@media (max-width: 500px) {
+    .nav {
+        height: 3rem;
+    }
+    
+    .nav .left {
+        margin-left: .5rem;
+    }
+
+    .nav .hamburgerButton {
+        margin-right: .5rem;
+    }
+    
+    .nav .left .links {
+        display: none;
+    }
+}

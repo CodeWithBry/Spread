@@ -1,0 +1,107 @@
+.dropDown {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    top: calc((var(--pad-y-s) * 2) + 4rem);
+    left: 0;
+    z-index: 2;
+    overflow: hidden;
+    background-color: rgba(104, 104, 104, 0.319);
+}
+
+.hideDropDown {
+    display: none;
+}
+
+.dropDown .blank {
+    width: 100%;
+    height: 100%;
+}
+
+.dropDown .wrapper {
+    width: 100%;
+    height: fit-content;
+    max-height: 50vh;
+    min-width: auto;
+    background-color: white;
+    border-radius: 0 0 1rem 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-shrink: 0;
+}
+
+.dropDown .wrapper .top {
+    color: white;
+    font-family: var(--font);
+    display: flex;
+    margin: 0 0 calc(var(--margin-normal) * 2) 0;
+    margin-left: 1rem;
+}
+
+.dropDown .wrapper .top>h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-large);
+    width: 98%;
+}
+
+.dropDown .wrapper .top .button {
+    background-color: transparent;
+    font-size: inherit;
+    margin-left: auto;
+    margin-right: .5rem;
+}
+
+.dropDown .wrapper>h3,
+.dropDown .wrapper>h3 {
+    font-size: var(--h1-smaller);
+    font-family: var(--font);
+    width: fit-content;
+    padding: var(--pad-y-l) var(--pad-x-l);
+}
+
+.dropDown .wrapper .categoriesLists,
+.dropDown .wrapper .linkLists {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: auto;
+    gap: var(--gap-normal);
+}
+
+.dropDown .wrapper .categoriesLists .link,
+.dropDown .wrapper .linkLists .link {
+    width: fit-content;
+    margin-left: var(--margin-large);
+    color: var(--text-unhighlight);
+    background-color: transparent;
+}
+
+.dropDown .wrapper .categoriesLists .link:hover,
+.dropDown .wrapper .linkLists .link:hover {
+    color: var(--text-lighter);
+}
+
+.dropDown .wrapper .linkLists,
+.dropDown .wrapper .tabHeadline {
+    display: none;
+}
+
+@media (max-width: 500px) {
+    .dropDown {
+        top: calc((var(--pad-y-s) * 2) + 3rem);
+    }
+
+    .dropDown .wrapper {
+        border-radius: 0 0 .5rem .5rem;
+    }
+
+    .dropDown .wrapper .linkLists,
+    .dropDown .wrapper .tabHeadline {
+        display: flex;
+    }
+}

@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Momo+Signature&family=Stack+Sans+Headline:wght@200..700&display=swap');
+
+:root {
+  --primary: #1A1A2E;
+  --link: #3f3fbc;
+  --accent: #C1121F;
+  --background: #F4F4F4;
+  --text-unhighlight: #707070;
+  --text-lighter: #e8e8e8;
+  --link: #0A84FF;
+  --box-shadow: 0 2px 10px -5px black;
+  --box-shadow-brighter: 0 2px 10px -2px black;
+
+  --gap-small: 4px;
+  --gap-normal: .65rem;
+  --gap-large: 1rem;
+
+  --margin-small: .5rem;
+  --margin-normal: .85rem;
+  --margin-large: 1.5rem;
+
+  --pad-x-s: .35rem;
+  --pad-x-m: .65rem;
+  --pad-x-l: .9rem;
+
+  --pad-y-s: .5rem;
+  --pad-y-m: .85rem;
+  --pad-y-l: 1rem;
+
+  --h1-smaller: clamp(1.25rem, 2.5vw, 1.75rem);
+  --h1-normal: clamp(1.5rem, 2.5vw, 2.5rem);
+  --h1-larger: clamp(1.75rem, 5vw, 5.25rem);
+
+  --p-smallest: clamp(.25rem, 2.5vw, .5rem);
+    --p-smaller: clamp(.5rem, 2.5vw, .6rem);
+  --p-normal: clamp(.8rem, 2.5vw, 1.2rem);
+  --p-largest: clamp(1rem, 2.5vw, 1.55rem);
+
+  --font-title: "Momo Signature", cursive;
+  --font: "Stack Sans Headline", sans-serif;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  width: fit-content;
+  height: fit-content;
+  overflow: hidden;
+}
+
+button,
+a {
+  transition: all .3s ease;
+  cursor: pointer;
+  color: inherit;
+}
+
+
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  position: static;
+}
