@@ -13,25 +13,27 @@ function Articles({ tabName }) {
   const { articleAID } = useParams()
   // NUMS AND BOOLEANS
   const [loading, setLoading] = useState(false)
+  const [disabled, setDisabled] = useState(false)
   const [numOfRequest, setNumOfResquest] = useState(0)
   // OBJECTS AND ARRAYS
   const [article, setArticle] = useState(null)
   const [newlyAddedNews, setNewlyAddedNews] = useState(null)
 
-  async function generateArticles() {
+
+  async function generateArticles(loading) {
     try {
-      setNumOfResquest(prev => prev + 1)
       const getResponse = await fetch((`${URL_API}/loadMoreNews`), {
         method: "GET",
         headers: { "Content-Type": "application/json" }
       });
 
       const articles = await processArticles(getResponse, false)
-      setNewlyAddedNews([...articles.worldNews, ...articles.phNews])
-      await saveArticlesToServer({ worldNews: [...articles.worldNews], phNews: [...articles.phNews] })
+      console.log(articles)
+      setNewlyAddedNews([...articles.worldNews])
       setLoading(false)
+      setNumOfResquest(prev => prev + 1)
     } catch (error) {
-      window.alert(error)
+      console.log(error)
       setLoading(false)
     }
   }
@@ -72,10 +74,13 @@ function Articles({ tabName }) {
       <Button
         className={
           numOfRequest != 1 ?
-            loading ? `${s.button} ${s.hideButton}` : s.button :
+            loading
+              ? `${s.button} ${s.hideButton}`
+              : s.button :
             s.hide
         }
-        clickListener={() => { setLoading(true), generateArticles(loading) }}
+        disabled={disabled}
+        clickListener={(e) => { setLoading(true), generateArticles(), setDisabled(true) }}
         content={"Read More"} />
     </div>
   )

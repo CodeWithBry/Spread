@@ -142,9 +142,9 @@ app.get("/api/loadMoreNews", async (req, res) => {
     try {
         const worldData = await axios.get("https://newsapi.org/v2/everything", {
             params: {
-                country: "us",
+                q: "news",
                 pageSize: 25,
-                apiKey: process.env.NEWS_API_KEY,
+                apiKey: process.env.REACT_APP_NEWS_API_KEY,
             },
         });
         let worldArticles = worldData.data.articles;

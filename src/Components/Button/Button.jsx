@@ -1,10 +1,11 @@
 import s from './Button.module.css'
 
-function Button({ className, clickListener, element, content }) {
+function Button({ className, clickListener, element, content, disabled }) {
    return (
       <button
          className={`${s.button} ${className}`}
-         onClick={clickListener}>
+         disabled={disabled}
+         onClick={(e) => clickListener(e)}>
             {element}{content}
       </button >
    )

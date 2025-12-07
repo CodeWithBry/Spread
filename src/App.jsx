@@ -132,11 +132,11 @@ function App() {
       const filteredPHNews = data?.phNews?.filter(article => article.urlToImage != null && article.description != null)
 
       const changedWorldNews = filteredWorldNews.map(article => ({ ...article, aid: crypto.randomUUID() }))
-      const changedPHNews = filteredPHNews.map(article => ({ ...article, aid: crypto.randomUUID() }))
+      const changedPHNews = filteredPHNews?.map(article => ({ ...article, aid: crypto.randomUUID() }))
 
       const newsCache = {
-         worldNews: [...changedPHNews],
-         phNews: [...changedWorldNews],
+         worldNews: [...changedWorldNews],
+         phNews: changedPHNews ? [...changedPHNews] : null,
          dateRequested: new Date().toISOString(),
          requestLimit: 1
       }
@@ -144,13 +144,13 @@ function App() {
       if (saveToLocalStorage) {
          localStorage.setItem("newsCache", JSON.stringify(newsCache))
          setWorldNews([...changedWorldNews])
-         setPHNews([...changedPHNews])
+         changedWorldNews && setPHNews([...changedPHNews])
       }
 
 
       return {
          worldNews: [...changedWorldNews],
-         phNews: [...changedPHNews]
+         phNews: changedPHNews && [...changedPHNews]
       }
    }
 
