@@ -1,0 +1,124 @@
+.footer {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: fit-content;
+    background-color: var(--primary);
+    color: white;
+}
+
+.footer .top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100vw;
+    height: fit-content;
+}
+
+.footer .top .left,
+.footer .top .right {
+    width: 60%;
+    min-width: 300px;
+}
+
+.footer .top .left .wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-large);
+    width: 80%;
+    margin: calc(var(--margin-large) * 2) auto;
+}
+
+.footer .top .left .wrapper>h2 {
+    font-family: var(--font-title);
+    display: flex;
+    align-items: center;
+}
+
+.footer .top .left .wrapper>h2>img {
+    width: 30px;
+    border-radius: 50%;
+}
+
+.footer .top .left .wrapper>p {
+    font-size: clamp(.75rem, 2.5vw, 1.2rem);
+    font-family: var(--font);
+    width: 70%;
+}
+
+.footer .top .left .wrapper .socialMedia {
+    display: flex;
+    gap: .5rem;
+}
+
+.footer .top .left .wrapper .socialMedia .link {
+    background-color: transparent;
+    font-size: clamp(.75rem, 2.5vw, 1.5rem);
+}
+
+.footer .top .left .wrapper .socialMedia .link>i {
+    font-size: inherit;
+}
+
+.footer .top .left .wrapper .backToTop {
+    width: fit-content;
+    height: fit-content;
+    padding: var(--pad-y-s) var(--pad-x-m);
+    border: 2px solid var(--background);
+    background-color: transparent;
+    color: var(--background);
+}
+
+.footer .top .right {
+    width: 40%;
+}
+
+.footer .top .right .wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: calc(var(--margin-large) * 2);
+}
+
+.footer .top .right .wrapper .list {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    gap: var(--gap-small);
+}
+
+.footer .top .right .wrapper .list>p {
+    font-family: var(--font);
+    font-size: clamp(.6rem, 2.5vw, .9rem);
+    font-weight: 700;
+}
+
+.footer .top .right .wrapper .list .group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-small);
+}
+
+.footer .top .right .wrapper .list .group .link {
+    font-size: clamp(.5rem, 2.5vw, .8rem);
+    color: var(--link);
+    width: fit-content;
+}
+
+.footer .top .right .wrapper .list .group .link:hover {
+    text-decoration: underline;
+}
+
+.footer .bottom {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100vw;
+    height: fit-content;
+    padding: var(--pad-y-l) 0;
+    font-family: var(--font);
+    background-color: var(--accent);
+    font-size: var(--p-normal);
+}

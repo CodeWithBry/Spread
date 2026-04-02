@@ -1,0 +1,5 @@
+.link {
+    color: var(--text);
+    font-family: var(--font);
+    text-decoration: none;
+}
