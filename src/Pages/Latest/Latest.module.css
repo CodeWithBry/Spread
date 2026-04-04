@@ -1,3 +1,68 @@
-.latest {
-    background-color: var(--text-lighter);
+.page {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+.spotlight {
+  display: flex;
+  gap: var(--space-6);
+  max-width: var(--max-content);
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--space-8);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.sliderWrap {
+  flex: 1.4;
+  min-width: 0;
+}
+
+.sidebar {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sidebarHeading {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.sidebarList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 520px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: var(--space-1);
+}
+
+.sidebarList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebarList::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .spotlight {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+
+  .sidebarList {
+    max-height: 320px;
+  }
 }

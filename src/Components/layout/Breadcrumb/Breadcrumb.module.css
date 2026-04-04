@@ -1,0 +1,35 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-muted-bg);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.segment {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  text-transform: capitalize;
+}
+
+.separator {
+  color: var(--color-muted);
+}
+
+.link {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.current {
+  color: var(--color-primary);
+}

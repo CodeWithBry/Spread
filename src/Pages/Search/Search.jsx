@@ -1,53 +1,70 @@
-import s from './Search.module.css'
-import SearchInput from '../../Components/SearchInput/SearchInput'
-import { useContext, useEffect, useState } from 'react'
-import { AppContext } from '../../App'
-import ArticleAsCard from '../ReusableComponent/ArticleAsCard/ArticleAsCard'
-import { useParams } from 'react-router-dom'
+import { useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { AppContext } from '../../context/AppContext';
+import SearchBar from '../../components/search/SearchBar/SearchBar';
+import ArticleRow from '../../features/articles/ArticleRow/ArticleRow';
+import s from './Search.module.css';
 
-function Search({ tabName }) {
-    const { worldNews, phNews, defineTab } = useContext(AppContext)
-    const { searchInputParams } = useParams(null)
-    const [searchInput, setSearchInput] = useState(searchInputParams)
-    const [getResults, setGetResults] = useState()
+function Search() {
+  const { worldNews, phNews, setActiveTab, filterArticles } = useContext(AppContext);
+  const { searchInputParams } = useParams();
+  const [searchInput, setSearchInput] = useState(
+    searchInputParams?.replace(/_/g, ' ') ?? ''
+  );
+  const [results, setResults] = useState([]);
 
-    useEffect(() => {
-        if (searchInputParams && worldNews && phNews) {
-            const articles = [...worldNews, ...phNews]
-            const searchInArticles = articles.filter((article) => (
-                article.description.toLowerCase().includes(
-                    searchInputParams.toLowerCase()
-                )
-                || article.title.toLowerCase().includes(
-                    searchInputParams.toLowerCase()
-                )
-            ))
-            console.log(searchInArticles, worldNews, phNews, searchInputParams)
-            setGetResults([...searchInArticles])
-        } else {
-            setSearchInput(null)
-        }
-    }, [searchInputParams, worldNews, phNews])
+  useEffect(() => {
+    setActiveTab('Search');
+  }, []);
 
-    useEffect(() => {
-        if (tabName) {
-            defineTab(tabName)
-        }
-    }, [tabName])
+  useEffect(() => {
+    if (!searchInputParams || (!worldNews.length && !phNews.length)) {
+      setResults([]);
+      return;
+    }
+    const query = searchInputParams.replace(/_/g, ' ').toLowerCase();
+    const all = [...worldNews, ...phNews];
+    const found = all.filter(
+      (a) =>
+        a.title?.toLowerCase().includes(query) ||
+        a.description?.toLowerCase().includes(query)
+    );
+    setResults(found);
+  }, [searchInputParams, worldNews, phNews]);
 
-    return (
-        <div className={s.search}>
-            <SearchInput
-                searchInput={searchInput}
-                setSearchInput={setSearchInput}
-                className={`${s.searchWrapper}`} />
-            <div className={s.results}>
-                {searchInputParams && getResults?.map(article => {
-                    return <ArticleAsCard article={article} className={`${s.article}`} />
-                })}
-            </div>
+  function handleSearchChange(val) {
+    setSearchInput(val);
+    filterArticles(val);
+  }
+
+  return (
+    <div className={s.page}>
+      <div className={s.searchWrap}>
+        <SearchBar
+          value={searchInput}
+          onChange={handleSearchChange}
+          className={s.searchBar}
+          hideDropdown
+        />
+      </div>
+
+      {searchInputParams && (
+        <div className={s.resultsHeader}>
+          <p className={s.count}>
+            {results.length > 0
+              ? `${results.length} result${results.length !== 1 ? 's' : ''} for "${searchInputParams.replace(/_/g, ' ')}"`
+              : `No results found for "${searchInputParams.replace(/_/g, ' ')}"`}
+          </p>
         </div>
-    )
+      )}
+
+      <div className={s.results}>
+        {results.map((article) => (
+          <ArticleRow key={article.aid} article={article} large />
+        ))}
+      </div>
+    </div>
+  );
 }
 
-export default Search
+export default Search;

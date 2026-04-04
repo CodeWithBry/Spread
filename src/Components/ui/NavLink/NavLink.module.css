@@ -1,0 +1,6 @@
+.link {
+  font-family: var(--font-body);
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}

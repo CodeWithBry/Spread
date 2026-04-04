@@ -1,90 +1,115 @@
-import { useContext, useEffect, useState } from 'react'
-import ArticlesSection from '../ReusableComponent/ArticlesSection/ArticlesSection'
-import s from './Articles.module.css'
-import HeroSection from './HeroSection/HeroSection'
-import { AppContext } from '../../App'
-import { useParams } from 'react-router-dom'
-import Article from './Article/Article'
-import Button from '../../Components/Button/Button'
-import { URL_API } from '../../App'
+import { useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { AppContext } from '../../context/AppContext';
+import { API_BASE_URL } from '../../context/AppContext';
+import HeroSection from '../../components/layout/HeroSection/HeroSection';
+import SearchBar from '../../components/search/SearchBar/SearchBar';
+import ArticleDetail from '../../components/ui/ArticleDetail/ArticleDetail';
+import ArticleGrid from '../../features/articles/ArticleGrid/ArticleGrid';
+import Spinner from '../../components/ui/Spinner/Spinner';
+import s from './Articles.module.css';
 
-function Articles({ tabName }) {
-  const { categories, phNews, worldNews, defineTab, processArticles } = useContext(AppContext)
-  const { articleAID } = useParams()
-  // NUMS AND BOOLEANS
-  const [loading, setLoading] = useState(false)
-  const [disabled, setDisabled] = useState(false)
-  const [numOfRequest, setNumOfResquest] = useState(0)
-  // OBJECTS AND ARRAYS
-  const [article, setArticle] = useState(null)
-  const [newlyAddedNews, setNewlyAddedNews] = useState(null)
+const CATEGORIES = [
+  'General', 'Technology', 'Sports', 'Business',
+  'Entertainment', 'Health', 'Science', 'Politics',
+];
 
+function Articles() {
+  const { worldNews, phNews, setActiveTab, filterArticles, processArticleData } = useContext(AppContext);
+  const { articleAID } = useParams();
 
-  async function generateArticles(articlesArgs) {
+  const [searchInput, setSearchInput] = useState('');
+  const [focusedArticle, setFocusedArticle] = useState(null);
+  const [extraNews, setExtraNews] = useState(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [moreLoaded, setMoreLoaded] = useState(false);
+
+  useEffect(() => {
+    setActiveTab('Articles');
+  }, []);
+
+  useEffect(() => {
+    if (!articleAID || (!worldNews.length && !phNews.length)) {
+      setFocusedArticle(null);
+      return;
+    }
+    const all = [...phNews, ...worldNews];
+    const found = all.find((a) => a.aid?.toLowerCase() === articleAID.toLowerCase());
+    setFocusedArticle(found ?? null);
+  }, [articleAID, worldNews, phNews]);
+
+  function handleSearchChange(val) {
+    setSearchInput(val);
+    filterArticles(val);
+  }
+
+  async function loadMore() {
+    setLoadingMore(true);
     try {
-      const getResponse = await fetch((`${URL_API}/loadMoreNews`), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ worldNews: articlesArgs.worldNews }),
+      const res = await fetch(`${API_BASE_URL}/loadMoreNews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ worldNews }),
       });
-      const articles = await processArticles(getResponse, true)
-      setNewlyAddedNews([...articles.worldNews])
-      setLoading(false)
-      setNumOfResquest(prev => prev + 1)
-    } catch (error) {
-      console.log(error)
-      setLoading(false)
+      const data = await res.json();
+      const processed = processArticleData(data, []);
+      setExtraNews(processed.worldNews);
+      setMoreLoaded(true);
+    } catch {
+      /* silently fail */
+    } finally {
+      setLoadingMore(false);
     }
   }
 
-  useEffect(() => {
-    if (articleAID != null && (worldNews.length != 0 || phNews.length != 0)) {
-      const articles = [...phNews, ...worldNews]
-      const findArticle = articles.find(article => articleAID == article.aid)
-      for (let i = 0; i < articles.length; i++) {
-        if (articles[i]?.aid?.toLowerCase() == articleAID.toLowerCase()) {
-          console.log(articles[i])
-          setArticle(articles[i])
-        }
-      }
-    } else {
-      setArticle(null)
-    }
-  }, [articleAID, phNews, worldNews])
+  function getByCategory(news, category) {
+    if (!news?.length) return [];
+    return news.filter((a) => a.category?.toLowerCase() === category.toLowerCase());
+  }
 
-  useEffect(() => {
-    if (tabName) {
-      defineTab(tabName)
-    }
-  }, [tabName])
+  const combined = [...(phNews ?? []), ...(worldNews ?? [])];
 
   return (
-    <div className={s.articles}>
-      <HeroSection />
-      {article && <Article article={article} />}
-      {categories?.map((category) => {
-        return <ArticlesSection
-          selectedCategory={{ category: category.category }}
-          sectionType={"Philippines"}
-          phNews={[...phNews, ...worldNews]}
-          id={category.category} />
+    <div className={s.page}>
+      <HeroSection
+        title="Read Articles"
+        subtitle="Breaking news and comprehensive coverage of international events, global politics, and worldwide developments."
+      >
+        <SearchBar
+          value={searchInput}
+          onChange={handleSearchChange}
+          className={s.search}
+        />
+      </HeroSection>
+
+      {focusedArticle && <ArticleDetail article={focusedArticle} />}
+
+      {CATEGORIES.map((cat) => {
+        const articles = getByCategory(combined, cat);
+        if (!articles.length) return null;
+        return (
+          <ArticleGrid
+            key={cat}
+            articles={articles}
+            title={cat}
+            id={cat}
+          />
+        );
       })}
-      {newlyAddedNews && <ArticlesSection
-        sectionType={"Discover"}
-        phNews={[...newlyAddedNews]} />}
-      <Button
-        className={
-          numOfRequest != 1 ?
-            loading
-              ? `${s.button} ${s.hideButton}`
-              : s.button :
-            s.hide
-        }
-        disabled={disabled}
-        clickListener={(e) => { setLoading(true), generateArticles({phNews, worldNews}), setDisabled(true) }}
-        content={"Read More"} />
+
+      {extraNews?.length > 0 && (
+        <ArticleGrid articles={extraNews} title="Discover More" />
+      )}
+
+      {!moreLoaded && (
+        <div className={s.loadMore}>
+          <button className={s.loadMoreBtn} onClick={loadMore} disabled={loadingMore}>
+            {loadingMore ? <Spinner size={22} /> : 'Load More'}
+          </button>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default Articles
+export default Articles;

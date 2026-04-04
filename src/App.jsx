@@ -1,258 +1,162 @@
-import { createContext, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import s from './App.module.css'
 
-// PAGES
+import { AppContext, API_BASE_URL } from './context/AppContext';
+import { timeAgo, filterBySearch, toSearchSlug, processArticleData } from './utils/news';
 
-import Home from './Pages/Home/Home';
-import NotFoundPage from './Pages/NotFoundPage/NotFoundPage';
-import NavigationBar from './Navigations/NavigationBar/NavigationBar';
-import SideBar from './Navigations/SideBar/SideBar';
-import Footer from './Navigations/Footer/Footer';
-import BreadCrumb from './Components/BreadCrumb/BreadCrumb';
-import Articles from './Pages/Articles/Articles';
-import Search from './Pages/Search/Search';
-import Latest from './Pages/Latest/Latest';
-import LoadingPage from './Pages/ReusableComponent/LoadingPage/LoadingPage';
+import './styles/globals.css';
 
-export const AppContext = createContext();
-export const URL_API = import.meta.env.MODE === "development"
-   ? "http://localhost:3000/api" // Local backend
-   : "https://spread-m5ja.onrender.com/api"; // Render backend // Render backend
+import Navbar from './components/layout/Navbar/Navbar';
+import Sidebar from './components/layout/Sidebar/Sidebar';
+import Breadcrumb from './components/layout/Breadcrumb/Breadcrumb';
+import Footer from './components/layout/Footer/Footer';
+import LoadingScreen from './components/layout/LoadingScreen/LoadingScreen';
+
+import Home from './pages/Home/Home';
+import Latest from './pages/Latest/Latest';
+import Articles from './pages/Articles/Articles';
+import Search from './pages/Search/Search';
+import NotFound from './pages/NotFound/NotFound';
+
+import s from './App.module.css';
+
+const CACHE_KEY = 'newsCache';
+const CACHE_TTL_DAYS = 5;
 
 function App() {
-   // REUSABLE VARIABLES
-   const location = useLocation()
-   const navigation = useNavigate()
-   // REFS
-   const navRef = useRef(null)
-   const wrapperRef = useRef()
-   // BOOLEANS
-   const [hideSideBar, setHideSideBar] = useState(true)
-   const [loading, setLoading] = useState(true)
-   // NUMERICAL VALUES 
-   // STRINGS
-   const [path, setPath] = useState("")
-   // ARRAYS && OBJECTS
-   const [tabs, setTabs] = useState([
-      { name: "Home", element: Home, path: `/home`, isSelected: true },
-      { name: "Latest", element: Latest, path: `/latest`, isSelected: false },
-      { name: "Articles", element: Articles, path: `/articles`, isSelected: false },
-      { name: "Search", element: Search, path: `/search`, isSelected: false },
-      { name: "Articles", element: Articles, path: `/articles/:articleAID`, isSelected: false },
-      { name: "Search", element: Search, path: `/search/:searchInputParams`, isSelected: false },
-      { name: "NotFoundPage", element: NotFoundPage, path: `*`, isSelected: false },
-   ])
-   const [categories, setCategories] = useState([
-      { category: "General", path: "/category/general" },
-      { category: "Technology", path: "/category/technology" },
-      { category: "Sports", path: "/category/sports" },
-      { category: "Business", path: "/category/business" },
-      { category: "Entertainment", path: "/category/entertainment" },
-      { category: "Health", path: "/category/health" },
-      { category: "Science", path: "/category/science" },
-      { category: "Politics", path: "/category/politics" }
-   ]);
-   const [searchResults, setSearchResults] = useState(null)
-   const [searchRecoms, setSearchRecoms] = useState(null)
-   const [worldNews, setWorldNews] = useState([])
-   const [phNews, setPHNews] = useState([])
-   // REUSABLE FUNCTIONS
-   function defineTab(tabName) {
-      setHideSideBar(true)
-      setTabs(prev => {
-         const updatedTabs = prev.map(tab => ({ ...tab, isSelected: tab.name == tabName ? true : false }))
-         return [...updatedTabs]
-      })
-   }
+  const location = useLocation();
+  const navigate = useNavigate();
 
-   function handleWrapperScroll(element) {
-      const nav = navRef.current
-      const el = element
-      if (el.scrollTop > 50) {
-         nav.style.boxShadow = "0 0 10px -5px black"
-      } else nav.style.boxShadow = null
-   }
+  const navRef = useRef(null);
+  const wrapperRef = useRef(null);
 
-   function scrollToTop() {
-      const element = wrapperRef.current
-      element.scrollTo({ top: 0, behavior: "smooth" })
-   }
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('Home');
+  const [currentPath, setCurrentPath] = useState('');
 
-   function dateConversion(dateString) {
-      const now = new Date();
-      const past = new Date(dateString);
-      const diffMs = now - past;
+  const [worldNews, setWorldNews] = useState([]);
+  const [phNews, setPhNews] = useState([]);
+  const [searchRecommendations, setSearchRecommendations] = useState(null);
 
-      const seconds = Math.floor(diffMs / 1000);
-      const minutes = Math.floor(seconds / 60);
-      const hours = Math.floor(minutes / 60);
-      const days = Math.floor(hours / 24);
-      const weeks = Math.floor(days / 7);
-      const months = Math.floor(days / 30);
-      const years = Math.floor(days / 365);
+  function scrollToTop() {
+    wrapperRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
-      if (seconds < 60) return ["just now", days];
-      if (minutes < 60) return [`${minutes} minute${minutes > 1 ? 's' : ''} ago`, days];
-      if (hours < 24) return [`${hours} hour${hours > 1 ? 's' : ''} ago`, days];
-      if (days < 7) return [`${days} day${days > 1 ? 's' : ''} ago`, days];
-      if (weeks < 4) return [`${weeks} week${weeks > 1 ? 's' : ''} ago`, days];
-      if (months < 12) return [`${months} month${months > 1 ? 's' : ''} ago`, days];
-      return [`${years} year${years > 1 ? 's' : ''} ago`, days];
-   }
+  function handleWrapperScroll(e) {
+    if (!navRef.current) return;
+    navRef.current.style.boxShadow =
+      e.currentTarget.scrollTop > 50 ? 'var(--shadow-md)' : 'var(--shadow-sm)';
+  }
 
-   function filterArticles(searchInput) {
-      const articles = [...worldNews, ...phNews]
-      const searchInArticles = articles.filter((article) => (
-         article.description.toLowerCase().includes(
-            searchInput.toLowerCase()
-         )
-         || article.title.toLowerCase().includes(
-            searchInput.toLowerCase()
-         )
-      ))
+  function filterArticles(query) {
+    if (!query) { setSearchRecommendations(null); return; }
+    const all = [...worldNews, ...phNews];
+    setSearchRecommendations(filterBySearch(all, query));
+  }
 
-      return [...searchInArticles]
-   }
+  function navigateToSearch(input) {
+    if (!input?.trim()) return;
+    navigate(`/search/${toSearchSlug(input)}`);
+  }
 
-   function handleSearch(searchInput) {
-      if (searchInput == "") return setSearchResults(null);
-      const searches = filterArticles(searchInput)
-      setSearchRecoms([...searches])
-   }
+  async function fetchAndStoreNews() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/getNews`, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const raw = await res.json();
+      const { worldNews: wn, phNews: ph } = processArticleData(raw);
 
-   function handleToSearchTab(searchInput) {
-      navigation(`/search/${searchInput.split(" ").filter(str => str != "").join("_")}`)
-   }
+      const cache = {
+        worldNews: wn,
+        phNews: ph,
+        dateRequested: new Date().toISOString(),
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+      setWorldNews(wn);
+      setPhNews(ph);
+    } catch {
+      /* silently fail — app remains usable with stale/empty data */
+    } finally {
+      setLoading(false);
+    }
+  }
 
-   async function processArticles(response, saveToLocalStorage) {
-      // if(response data is not in json format ? then don't enchain with .json() method)
-      try {
-         const data = !response?.worldNews ? (await response.json()) : response
-         const filteredWorldNews = worldNews.length != 0 ? [...worldNews, ...data?.worldNews?.filter(article => article.urlToImage != null && article.description != null)] : data?.worldNews?.filter(article => article.urlToImage != null && article.description != null)
-         const filteredPHNews = data?.phNews ? data?.phNews?.filter(article => article.urlToImage != null && article.description != null) : phNews.filter(article => article.urlToImage != null && article.description != null)
+  useEffect(() => {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+    if (!cached) {
+      fetchAndStoreNews();
+      return;
+    }
 
-         const changedWorldNews = filteredWorldNews?.map(article => ({ ...article, aid: crypto.randomUUID() }))
-         const changedPHNews = filteredPHNews?.map(article => ({ ...article, aid: crypto.randomUUID() }))
+    const ageDays = timeAgo(cached.dateRequested).days;
+    if (ageDays >= CACHE_TTL_DAYS) {
+      fetchAndStoreNews();
+      return;
+    }
 
-         const newsCache = {
-            worldNews: [...changedWorldNews],
-            phNews: changedPHNews ? [...changedPHNews] : null,
-            dateRequested: new Date().toISOString(),
-            requestLimit: 1
-         }
+    setWorldNews(cached.worldNews ?? []);
+    setPhNews(cached.phNews ?? []);
+    setTimeout(() => setLoading(false), 800);
+  }, []);
 
-         if (saveToLocalStorage) {
-            localStorage.setItem("newsCache", JSON.stringify(newsCache))
-            setWorldNews([...changedWorldNews])
-            changedWorldNews && setPHNews([...changedPHNews])
-         }
+  useEffect(() => {
+    const url = window.location.href;
+    const path = url.slice(url.lastIndexOf('/#/') + 2);
+    setCurrentPath(path);
+    setSearchRecommendations(null);
+    setSidebarOpen(false);
+  }, [location]);
 
+  const ctx = {
+    navigate,
+    navRef,
+    wrapperRef,
+    sidebarOpen,
+    setSidebarOpen,
+    activeTab,
+    setActiveTab,
+    currentPath,
+    worldNews,
+    setWorldNews,
+    phNews,
+    setPhNews,
+    searchRecommendations,
+    filterArticles,
+    navigateToSearch,
+    scrollToTop,
+    timeAgo,
+    processArticleData,
+  };
 
-         return {
-            worldNews: [...changedWorldNews],
-            phNews: changedPHNews && [...changedPHNews]
-         }
-      } catch (error) {
-         console.log(error)
-      }
-   }
-
-   async function getNews() {
-      try {
-         const getResponse = await fetch((`${URL_API}/getNews`), {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-         });
-         await processArticles(getResponse, true)
-         setTimeout(() => {
-            setLoading(false)
-         }, 3000);
-      } catch (error) {
-         console.log(error)
-      }
-   }
-
-   // EFFECTS
-   useEffect(() => {
-      function getPath() {
-         const url = window.location.href
-         const pathURL = url.slice(url.lastIndexOf("/#/") + 2)
-         setPath(pathURL)
-      }
-      if (location) {
-         setSearchResults(null)
-         getPath()
-      }
-   }, [location])
-
-   useEffect(() => {
-      const newsCache = JSON.parse(localStorage.getItem("newsCache"))
-
-      if (newsCache == null) {
-         getNews()
-      } else {
-         if (dateConversion(newsCache.dateRequested)[1] >= 5) return getNews()
-
-
-         setTimeout(() => {
-            setLoading(false)
-            setWorldNews([...newsCache?.worldNews])
-            setPHNews([...newsCache?.phNews])
-         }, 2000);
-      }
-
-   }, [])
-
-   // CONTEXT VARIABLE 
-   const variables = {
-      // REUSABLE VARIABLES
-      navigation,
-      // REFS
-      navRef, wrapperRef,
-      // BOOLEANS
-      hideSideBar, setHideSideBar,
-      loading, setLoading,
-      // NUMERICAL VALUES
-
-      // STRINGS
-      path,
-      // ARRAYS && OBJECTS
-      tabs, setTabs,
-      categories, setCategories,
-      worldNews, setWorldNews,
-      phNews, setPHNews,
-      searchResults, setSearchResults,
-      searchRecoms, setSearchRecoms,
-      // FUNCTIONS
-      defineTab, scrollToTop,
-      dateConversion, handleSearch,
-      handleToSearchTab, filterArticles,
-      processArticles
-   }
-
-
-   return <>
-      <AppContext.Provider value={variables}>
-         <LoadingPage loading={loading} />
-         <div className={s.wrapper} ref={wrapperRef} onScroll={(e) => handleWrapperScroll(e.currentTarget)}>
-            <div className={s.container}>
-               <NavigationBar />
-               <SideBar />
-               <BreadCrumb />
-               <Routes>
-                  {tabs.map((tab) => {
-                     const PageComponent = tab.element
-                     const props = tab.name
-                     return <Route path={tab.path} element={(<><PageComponent tabName={props} /></>)} />
-                  })}
-                  <Route path={'/search/:searchInputParams'} element={(<><Search /></>)} />
-               </Routes>
-               <Footer />
-            </div>
-         </div>
-
-      </AppContext.Provider>
-   </>
+  return (
+    <AppContext.Provider value={ctx}>
+      <LoadingScreen visible={loading} />
+      <div
+        className={s.wrapper}
+        ref={wrapperRef}
+        onScroll={handleWrapperScroll}
+      >
+        <Navbar />
+        <Sidebar />
+        <Breadcrumb />
+        <main className={s.main}>
+          <Routes>
+            <Route path="/home" element={<Home />} />
+            <Route path="/latest" element={<Latest />} />
+            <Route path="/articles" element={<Articles />} />
+            <Route path="/articles/:articleAID" element={<Articles />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/search/:searchInputParams" element={<Search />} />
+            <Route path="/" element={<Home />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </AppContext.Provider>
+  );
 }
-export default App
+
+export default App;

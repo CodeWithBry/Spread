@@ -1,13 +1,10 @@
-.home {
-    background-color: var(--text-lighter);
+.page {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
 }
 
-.home .button {
-    width: fit-content;
-    height: fit-content;
-    margin: var(--margin-large) auto;
-    padding: var(--pad-y-m) var(--pad-x-l);
-    color: white;
-    background-color: var(--primary);
-    display: block;
+.search {
+  max-width: 600px;
+  width: 90%;
 }
